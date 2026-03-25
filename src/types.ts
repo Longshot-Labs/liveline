@@ -121,6 +121,9 @@ export interface LivelineProps {
   onSeriesToggle?: (id: string, visible: boolean) => void  // Multi-series toggle callback
   seriesToggleCompact?: boolean  // Show only colored dots (no labels) in series toggle (default: false)
 
+  /** Override Y-axis range — bypasses internal computeRange when provided */
+  range?: { min: number; max: number }
+
   className?: string
   style?: CSSProperties
 }

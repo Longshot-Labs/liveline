@@ -64,6 +64,7 @@ interface EngineConfig {
   }>
   isMultiSeries?: boolean
   hiddenSeriesIds?: Set<string>
+  range?: { min: number; max: number }
 }
 
 interface BadgeEls {
@@ -164,7 +165,7 @@ function updateWindowTransition(
       }
     }
     if (targetVisible.length > 0) {
-      const targetRange = computeRange(targetVisible, smoothValue, cfg.referenceLine?.value, cfg.exaggerate)
+      const targetRange = cfg.range ?? computeRange(targetVisible, smoothValue, cfg.referenceLine?.value, cfg.exaggerate)
       wt.rangeToMin = targetRange.min
       wt.rangeToMax = targetRange.max
     }
@@ -1523,26 +1524,31 @@ export function useLivelineEngine(
     )
     // Override range target with union of ALL series (not just first)
     if (transition.startMs > 0 && effectiveMultiSeries.length > 1) {
-      const targetRightEdge = now + cfg.windowSecs * buffer
-      const targetLeftEdge = targetRightEdge - cfg.windowSecs
-      let unionMin = Infinity
-      let unionMax = -Infinity
-      for (const s of effectiveMultiSeries) {
-        const sData = pausedMultiDataRef.current?.get(s.id)?.data ?? s.data
-        const sv = smoothValues.get(s.id) ?? s.value
-        const targetVisible: LivelinePoint[] = []
-        for (const p of sData) {
-          if (p.time >= targetLeftEdge - 2 && p.time <= targetRightEdge) targetVisible.push(p)
+      if (cfg.range) {
+        transition.rangeToMin = cfg.range.min
+        transition.rangeToMax = cfg.range.max
+      } else {
+        const targetRightEdge = now + cfg.windowSecs * buffer
+        const targetLeftEdge = targetRightEdge - cfg.windowSecs
+        let unionMin = Infinity
+        let unionMax = -Infinity
+        for (const s of effectiveMultiSeries) {
+          const sData = pausedMultiDataRef.current?.get(s.id)?.data ?? s.data
+          const sv = smoothValues.get(s.id) ?? s.value
+          const targetVisible: LivelinePoint[] = []
+          for (const p of sData) {
+            if (p.time >= targetLeftEdge - 2 && p.time <= targetRightEdge) targetVisible.push(p)
+          }
+          if (targetVisible.length > 0) {
+            const range = computeRange(targetVisible, sv, cfg.referenceLine?.value, cfg.exaggerate)
+            if (range.min < unionMin) unionMin = range.min
+            if (range.max > unionMax) unionMax = range.max
+          }
         }
-        if (targetVisible.length > 0) {
-          const range = computeRange(targetVisible, sv, cfg.referenceLine?.value, cfg.exaggerate)
-          if (range.min < unionMin) unionMin = range.min
-          if (range.max > unionMax) unionMax = range.max
+        if (isFinite(unionMin) && isFinite(unionMax)) {
+          transition.rangeToMin = unionMin
+          transition.rangeToMax = unionMax
         }
-      }
-      if (isFinite(unionMin) && isFinite(unionMax)) {
-        transition.rangeToMin = unionMin
-        transition.rangeToMax = unionMax
       }
     }
     displayWindowRef.current = windowResult.windowSecs
@@ -1558,8 +1564,8 @@ export function useLivelineEngine(
     // Use paused snapshots when available to prevent left-edge erosion
     // Exclude hidden series (alpha < 0.01) from range so Y-axis adjusts
     const seriesEntries: MultiSeriesEntry[] = []
-    let globalMin = Infinity
-    let globalMax = -Infinity
+    let globalMin = cfg.range ? cfg.range.min : Infinity
+    let globalMax = cfg.range ? cfg.range.max : -Infinity
     for (const s of effectiveMultiSeries) {
       const snap = pausedMultiDataRef.current?.get(s.id)
       const seriesData = snap?.data ?? s.data
@@ -1571,7 +1577,7 @@ export function useLivelineEngine(
       const alpha = seriesAlphas.get(s.id) ?? 1
       if (visible.length >= 2) {
         // Only include in range if series is at least partially visible
-        if (alpha > 0.01) {
+        if (!cfg.range && alpha > 0.01) {
           const range = computeRange(visible, sv, cfg.referenceLine?.value, cfg.exaggerate)
           if (range.min < globalMin) globalMin = range.min
           if (range.max > globalMax) globalMax = range.max
@@ -1783,7 +1789,7 @@ export function useLivelineEngine(
     }
 
     // Compute + smooth Y range
-    const computedRange = computeRange(visible, smoothValue, cfg.referenceLine?.value, cfg.exaggerate)
+    const computedRange = cfg.range ?? computeRange(visible, smoothValue, cfg.referenceLine?.value, cfg.exaggerate)
     const isWindowTransitioning = transition.startMs > 0
     const rangeResult = updateRange(
       computedRange, rangeInitedRef.current,
