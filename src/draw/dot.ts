@@ -41,28 +41,14 @@ export function drawDot(
     }
   }
 
-  // Outer bg color for blending
-  const outerRgb = parseColorRgb(palette.badgeOuterBg)
-
-  // White outer circle with subtle shadow
-  ctx.save()
-  ctx.globalAlpha = baseAlpha
-  ctx.shadowColor = palette.badgeOuterShadow
-  ctx.shadowBlur = 6 * (1 - dim)
-  ctx.shadowOffsetY = 1
-  ctx.beginPath()
-  ctx.arc(x, y, 6.5, 0, Math.PI * 2)
-  ctx.fillStyle = palette.badgeOuterBg
-  ctx.fill()
-  ctx.restore()
-
-  // Colored inner dot — blend toward outer bg when dimmed
+  // Colored dot — blend toward bg when dimmed
   ctx.globalAlpha = baseAlpha
   ctx.beginPath()
-  ctx.arc(x, y, 3.5, 0, Math.PI * 2)
+  ctx.arc(x, y, 4, 0, Math.PI * 2)
   if (dim > 0.01) {
     const lineRgb = parseColorRgb(palette.line)
-    ctx.fillStyle = lerpColor(lineRgb, outerRgb, dim)
+    const bgRgb = parseColorRgb(palette.badgeOuterBg)
+    ctx.fillStyle = lerpColor(lineRgb, bgRgb, dim)
   } else {
     ctx.fillStyle = palette.line
   }
