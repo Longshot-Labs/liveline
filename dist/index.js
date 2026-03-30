@@ -454,9 +454,10 @@ function drawLine(ctx, layout, palette, visible, smoothValue, now, showFill, scr
     ctx.lineWidth = 1;
     const dashBase = isScrubbing ? 1 - scrubAmount * 0.2 : 1;
     ctx.globalAlpha = incomingAlpha * (chartReveal < 1 ? dashBase * chartReveal : dashBase);
+    const lastX = pts[pts.length - 1][0];
     ctx.beginPath();
     ctx.moveTo(pad.left, currentY);
-    ctx.lineTo(layout.w - pad.right, currentY);
+    ctx.lineTo(lastX, currentY);
     ctx.stroke();
     ctx.setLineDash([]);
   }
