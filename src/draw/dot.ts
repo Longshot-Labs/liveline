@@ -22,6 +22,7 @@ export function drawDot(
   pulse: boolean = true,
   scrubAmount: number = 0,
   now_ms: number = performance.now(),
+  maxPulseRadius: number = Infinity,
 ): void {
   const baseAlpha = ctx.globalAlpha
   const dim = scrubAmount * 0.7
@@ -30,7 +31,7 @@ export function drawDot(
   if (pulse && dim < 0.3) {
     const t = (now_ms % PULSE_INTERVAL) / PULSE_DURATION
     if (t < 1) {
-      const radius = 9 + t * 12
+      const radius = Math.min(9 + t * 12, maxPulseRadius)
       const pulseAlpha = 0.35 * (1 - t) * (1 - dim * 3)
       ctx.beginPath()
       ctx.arc(x, y, radius, 0, Math.PI * 2)

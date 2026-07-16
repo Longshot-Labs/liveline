@@ -80,7 +80,7 @@ interface LivelineProps {
     padding?: Padding;
     onHover?: (point: HoverPoint | null) => void;
     cursor?: string;
-    pulse?: boolean;
+    pulse?: boolean | 'bounded';
     lineWidth?: number;
     mode?: 'line' | 'candle';
     candles?: CandlePoint[];

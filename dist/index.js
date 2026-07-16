@@ -476,13 +476,13 @@ function lerpColor(a, b, t) {
   const bl = Math.round(a[2] + (b[2] - a[2]) * t);
   return `rgb(${r},${g},${bl})`;
 }
-function drawDot(ctx, x, y, palette, pulse = true, scrubAmount = 0, now_ms = performance.now()) {
+function drawDot(ctx, x, y, palette, pulse = true, scrubAmount = 0, now_ms = performance.now(), maxPulseRadius = Infinity) {
   const baseAlpha = ctx.globalAlpha;
   const dim = scrubAmount * 0.7;
   if (pulse && dim < 0.3) {
     const t = now_ms % PULSE_INTERVAL / PULSE_DURATION;
     if (t < 1) {
-      const radius = 9 + t * 12;
+      const radius = Math.min(9 + t * 12, maxPulseRadius);
       const pulseAlpha = 0.35 * (1 - t) * (1 - dim * 3);
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, Math.PI * 2);
@@ -1484,7 +1484,13 @@ function drawFrame(ctx, layout, palette, opts) {
     if (dotAlpha > 0.01) {
       ctx.save();
       if (dotAlpha < 1) ctx.globalAlpha = dotAlpha;
-      drawDot(ctx, lastPt[0], lastPt[1], palette, showPulse, dotScrub, opts.now_ms);
+      const maxPulseRadius = opts.showPulse === "bounded" ? Math.max(0, Math.min(
+        lastPt[0] - 1,
+        layout.w - 1 - lastPt[0],
+        lastPt[1] - 1,
+        layout.h - layout.pad.bottom - 1 - lastPt[1]
+      )) : Infinity;
+      drawDot(ctx, lastPt[0], lastPt[1], palette, showPulse, dotScrub, opts.now_ms, maxPulseRadius);
       ctx.restore();
     }
     if (opts.showMomentum) {

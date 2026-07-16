@@ -106,7 +106,7 @@ export interface LivelineProps {
   padding?: Padding
   onHover?: (point: HoverPoint | null) => void
   cursor?: string          // CSS cursor on hover (default: 'crosshair')
-  pulse?: boolean          // Pulsing ring on live dot (default: true)
+  pulse?: boolean | 'bounded' // Pulsing ring on live dot (default: true); bounded keeps it within the plot
   lineWidth?: number       // Stroke width of the main line in px (default: 2)
 
   // Candlestick mode

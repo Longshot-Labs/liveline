@@ -35,7 +35,7 @@ export interface DrawOptions {
   arrowState: ArrowState
   showGrid: boolean
   showMomentum: boolean
-  showPulse: boolean
+  showPulse: boolean | 'bounded'
   showFill: boolean
   referenceLine?: ReferenceLine
   hoverX: number | null
@@ -159,7 +159,15 @@ export function drawFrame(
     if (dotAlpha > 0.01) {
       ctx.save()
       if (dotAlpha < 1) ctx.globalAlpha = dotAlpha
-      drawDot(ctx, lastPt[0], lastPt[1], palette, showPulse, dotScrub, opts.now_ms)
+      const maxPulseRadius = opts.showPulse === 'bounded'
+        ? Math.max(0, Math.min(
+          lastPt[0] - 1,
+          layout.w - 1 - lastPt[0],
+          lastPt[1] - 1,
+          layout.h - layout.pad.bottom - 1 - lastPt[1],
+        ))
+        : Infinity
+      drawDot(ctx, lastPt[0], lastPt[1], palette, showPulse, dotScrub, opts.now_ms, maxPulseRadius)
       ctx.restore()
     }
 
@@ -244,7 +252,7 @@ export interface MultiSeriesDrawOptions {
   series: MultiSeriesEntry[]
   now: number
   showGrid: boolean
-  showPulse: boolean
+  showPulse: boolean | 'bounded'
   referenceLine?: ReferenceLine
   hoverX: number | null
   hoverTime: number | null

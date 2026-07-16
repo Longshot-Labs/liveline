@@ -30,7 +30,7 @@ interface EngineConfig {
   formatTime: (t: number) => string
   padding: Required<Padding>
   onHover?: (point: HoverPoint | null) => void
-  showPulse: boolean
+  showPulse: boolean | 'bounded'
   scrub: boolean
   exaggerate: boolean
   degenOptions?: DegenOptions
