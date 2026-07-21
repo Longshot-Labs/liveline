@@ -100,6 +100,8 @@ export interface LivelineProps {
 
   // Optional
   referenceLine?: ReferenceLine
+  /** Suppress the dashed current-value line drawn from the plot edge to the live tip. */
+  hideDashLine?: boolean
   formatValue?: (v: number) => string
   formatTime?: (t: number) => string
   lerpSpeed?: number

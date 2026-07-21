@@ -1461,7 +1461,7 @@ function drawFrame(ctx, layout, palette, opts) {
     ctx.restore();
   }
   const scrubX = opts.scrubAmount > 0.05 ? opts.hoverX : null;
-  const pts = drawLine(ctx, layout, palette, opts.visible, opts.smoothValue, opts.now, opts.showFill, scrubX, opts.scrubAmount, reveal, opts.now_ms);
+  const pts = drawLine(ctx, layout, palette, opts.visible, opts.smoothValue, opts.now, opts.showFill, scrubX, opts.scrubAmount, reveal, opts.now_ms, 1, opts.hideDashLine ?? false);
   {
     const timeAlpha = reveal < 1 ? revealRamp(0.15, 0.7) : 1;
     if (timeAlpha > 0.01) {
@@ -1609,7 +1609,9 @@ function drawMultiFrame(ctx, layout, opts) {
       scrubX,
       opts.scrubAmount,
       reveal,
-      opts.now_ms
+      opts.now_ms,
+      1,
+      opts.hideDashLine ?? false
     );
     ctx.restore();
     if (pts && pts.length > 0) {
@@ -3256,6 +3258,7 @@ function useLivelineEngine(canvasRef, containerRef, config) {
         showGrid: cfg.showGrid,
         showPulse: cfg.showPulse,
         referenceLine: cfg.referenceLine,
+        hideDashLine: cfg.hideDashLine,
         hoverX: drawHoverX,
         hoverTime: drawHoverTime,
         hoverEntries,
@@ -3409,6 +3412,7 @@ function useLivelineEngine(canvasRef, containerRef, config) {
         showPulse: cfg.showPulse,
         showFill: cfg.showFill,
         referenceLine: cfg.referenceLine,
+        hideDashLine: cfg.hideDashLine,
         hoverX: drawHoverX,
         hoverValue: drawHoverValue,
         hoverTime: drawHoverTime,
@@ -3517,6 +3521,7 @@ function Liveline({
   tooltipOutline = true,
   orderbook,
   referenceLine,
+  hideDashLine,
   formatValue = defaultFormatValue,
   formatTime = defaultFormatTime,
   lerpSpeed = 0.08,
@@ -3644,6 +3649,7 @@ function Liveline({
     momentumOverride,
     showFill: isMultiSeries ? false : fill,
     referenceLine,
+    hideDashLine,
     formatValue,
     formatTime,
     padding: pad,

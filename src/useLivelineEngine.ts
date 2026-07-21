@@ -26,6 +26,7 @@ interface EngineConfig {
   momentumOverride?: Momentum
   showFill: boolean
   referenceLine?: ReferenceLine
+  hideDashLine?: boolean
   formatValue: (v: number) => string
   formatTime: (t: number) => string
   padding: Required<Padding>
@@ -1687,6 +1688,7 @@ export function useLivelineEngine(
       showGrid: cfg.showGrid,
       showPulse: cfg.showPulse,
       referenceLine: cfg.referenceLine,
+      hideDashLine: cfg.hideDashLine,
       hoverX: drawHoverX,
       hoverTime: drawHoverTime,
       hoverEntries,
@@ -1846,6 +1848,7 @@ export function useLivelineEngine(
       showPulse: cfg.showPulse,
       showFill: cfg.showFill,
       referenceLine: cfg.referenceLine,
+      hideDashLine: cfg.hideDashLine,
       hoverX: drawHoverX,
       hoverValue: drawHoverValue,
       hoverTime: drawHoverTime,

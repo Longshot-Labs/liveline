@@ -1,4 +1,4 @@
-import * as react_jsx_runtime from 'react/jsx-runtime';
+import * as react from 'react';
 import { CSSProperties, ReactElement } from 'react';
 
 interface LivelinePoint {
@@ -74,6 +74,8 @@ interface LivelineProps {
     tooltipOutline?: boolean;
     orderbook?: OrderbookData;
     referenceLine?: ReferenceLine;
+    /** Suppress the dashed current-value line drawn from the plot edge to the live tip. */
+    hideDashLine?: boolean;
     formatValue?: (v: number) => string;
     formatTime?: (t: number) => string;
     lerpSpeed?: number;
@@ -108,7 +110,7 @@ interface CandlePoint {
     close: number;
 }
 
-declare function Liveline({ data, value, series: seriesProp, theme, color, window: windowSecs, grid, badge, momentum, fill, scrub, loading, paused, emptyText, exaggerate, degen: degenProp, badgeTail, badgeVariant, showValue, valueMomentumColor, windows, onWindowChange, windowStyle, tooltipY, tooltipOutline, orderbook, referenceLine, formatValue, formatTime, lerpSpeed, padding: paddingOverride, onHover, cursor, pulse, mode, candles, candleWidth, liveCandle, lineMode, lineData, lineValue, onModeChange, onSeriesToggle, seriesToggleCompact, lineWidth, range, className, style, }: LivelineProps): react_jsx_runtime.JSX.Element;
+declare function Liveline({ data, value, series: seriesProp, theme, color, window: windowSecs, grid, badge, momentum, fill, scrub, loading, paused, emptyText, exaggerate, degen: degenProp, badgeTail, badgeVariant, showValue, valueMomentumColor, windows, onWindowChange, windowStyle, tooltipY, tooltipOutline, orderbook, referenceLine, hideDashLine, formatValue, formatTime, lerpSpeed, padding: paddingOverride, onHover, cursor, pulse, mode, candles, candleWidth, liveCandle, lineMode, lineData, lineValue, onModeChange, onSeriesToggle, seriesToggleCompact, lineWidth, range, className, style, }: LivelineProps): react.JSX.Element;
 
 interface LivelineTransitionProps {
     /** Key of the active child to display. Must match a child's `key` prop. */
@@ -132,6 +134,6 @@ interface LivelineTransitionProps {
  * </LivelineTransition>
  * ```
  */
-declare function LivelineTransition({ active, children, duration, className, style, }: LivelineTransitionProps): react_jsx_runtime.JSX.Element;
+declare function LivelineTransition({ active, children, duration, className, style, }: LivelineTransitionProps): react.JSX.Element;
 
 export { type BadgeVariant, type CandlePoint, type DegenOptions, type HoverPoint, Liveline, type LivelinePoint, type LivelineProps, type LivelineSeries, LivelineTransition, type LivelineTransitionProps, type Momentum, type OrderbookData, type Padding, type ReferenceLine, type ThemeMode, type WindowOption, type WindowStyle };
